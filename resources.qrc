@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/plugins/ptaplugin" >
+    <qresource prefix="/plugins/qgis-intelligent-search" >
         <file>icon.png</file>
     </qresource>
 </RCC>

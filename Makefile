@@ -40,7 +40,7 @@ SOURCES = \
 	__init__.py \
 	ptaplugin.py ptaplugin_dialog.py
 
-PLUGINNAME = ptaplugin
+PLUGINNAME = intelligent-search-plugin
 
 PY_FILES = \
 	__init__.py \

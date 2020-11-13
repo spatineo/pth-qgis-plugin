@@ -3,7 +3,7 @@
 # This file should be included when you package your plugin.# Mandatory items:
 
 [general]
-name=ptaplugin
+name=intelligent-search-plugin
 qgisMinimumVersion=3.0
 description=QGIS plugin utilizing the pta intelligent search api
 version=0.1
