@@ -25,6 +25,7 @@ from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction, QListWidgetItem
 from qgis.server import *
+from qgis.core import QgsVectorLayer, QgsProject
 
 # Initialize Qt resources from file resources.py
 from .resources import *
@@ -32,6 +33,8 @@ from .resources import *
 from .ptaplugin_dialog import ptapluginDialog
 import os.path
 import requests
+import urllib
+from xml.etree import ElementTree
 
 
 class ptaplugin:
@@ -179,34 +182,57 @@ class ptaplugin:
         f.write(message + "\n\n")
         f.close()
 
-    def qgisRequest(self):
-        #TODO: Fix or remove. This is a potential way to get layer information
-        server = QgsServer()
-        self.wLog("Create server")
-        request = QgsBufferServerRequest("http://localhos:8080")
-        response = QgsBufferServerResponse()
-        self.wLog("Send request")
-        server.handleRequest(request, response)
-        self.wLog(str(response))
-        self.wLog("Code printed")
-        self.wLog(str(response.statusCode()))
-        self.wLog(str(response.body()))
-        self.wLog(response.headers())
-        self.wLog(response.body().data().decode('utf8'))
+    def getCapabilities(self):
+        response = requests.get("https://kartta.hel.fi/ws/geoserver/avoindata/wfs?request=GetCapabilities", stream=True)
+        xmlString = response.content
+        root = ElementTree.fromstring(xmlString)
+
+        items = []
+
+        url = "https://kartta.hel.fi/ws/geoserver/avoindata/wfs"
+        featureName = "avoindata:Kaavahakemisto_alue_kaava_vireilla"
+
+        self.getWfsFeature(url, featureName)
+
+        for feature in root[3]:
+            title = feature.find("{http://www.opengis.net/wfs/2.0}Title").text
+            item = QListWidgetItem()
+            item.setText(title)
+            item.setData(1, feature)
+            items.append(item)
+            #self.wLog(str(feature))
+
+        return items
+
+    def getWfsFeature(self, featureUrl, featureName):
+        params = {
+            "service": "WFS",
+            #"version": "1.0.0",
+            "request": "GetFeature",
+            "typename": featureName,
+            #"srsname": "EPSG23030"
+        }
+        url = featureUrl + "?" + urllib.parse.unquote(urllib.parse.urlencode(params))
+        vlayer = QgsVectorLayer(url, "my wfs layer", "WFS")
+        QgsProject.instance().addMapLayer(vlayer)
+
+        ## https://geoserver.ymparisto.fi/geoserver/wfs?service=wfs&request=GetFeatures&typename=net:Network
+
 
     def searchApi(self):
         """Send request to pta search API and return results."""
         text = self.dlg.searchBox.text()
-        response = requests.get("http://localhost:8080")
-        #url = "https://beta.paikkatietoalusta.fi/v1/search?X-CLIENT-LANG=FI"
-        #self.wLog(str(self.createPTAJSON(text, "FI")))
-        #response = requests.post(url, json = self.createPTAJSON(text, "FI"))
-        responseStatus = response.status_code
+        if(text and text.strip()):
+            #response = requests.get("http://localhost:8080")
+            url = "https://beta.paikkatietoalusta.fi/api/public/v1/search?X-CLIENT-LANG=FI"
+            #self.wLog(str(self.createPTAJSON(text, "FI")))
+            response = requests.post(url, json = self.createPTAJSON(text, "FI"))
+            responseStatus = response.status_code
 
-        if(responseStatus == 200 or responseStatus == 201 or responseStatus == 204 ):
-            json = response.json()
-            self.addResults(json.get("hits"))
-            self.dlg.searchResult.itemClicked.connect(self.searchResultClicked)
+            if(responseStatus == 200 or responseStatus == 201 or responseStatus == 204 ):
+                json = response.json()
+                self.addResults(json.get("hits"))
+                self.dlg.searchResult.itemClicked.connect(self.searchResultClicked)
 
 
     def addResults(self, hits):
@@ -221,9 +247,16 @@ class ptaplugin:
 
     def searchResultClicked(self, item):
         #TODO
+        self.dlg.abstractBox.clear()
+        self.dlg.searchResult2.clear()
+        self.dlg.abstractLabel.clear()
         self.wLog(str(item.data(1).get("abstractText")))
+        self.dlg.abstractLabel.setText(item.text())
+        self.dlg.abstractBox.setText(item.data(1).get("abstractText"))
 
-        self.dlg.searchResult2.addItem(item.text() + " 1")
+        features = self.getCapabilities()
+        for feature in features:
+            self.dlg.searchResult2.addItem(feature)
 
     def createPTAJSON(self, queryString, language):
         return {"skip": 0, "pageSize": 10, "query": queryString.split(), "queryLanguage": language, "facets": {"types": ["isService"], "keywordsInspire": ["Ortoilmakuvat"]}, "sort": [{"field": "title", "order": "asc"}]}

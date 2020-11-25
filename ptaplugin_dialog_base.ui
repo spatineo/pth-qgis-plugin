@@ -1,38 +1,38 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>ptapluginDialogBase</class>
- <widget class="QDialog" name="ptapluginDialogBase" >
-  <property name="geometry" >
+ <widget class="QDialog" name="ptapluginDialogBase">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>700</width>
-    <height>300</height>
+    <width>648</width>
+    <height>411</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>ptaplugin</string>
   </property>
-  <widget class="QDialogButtonBox" name="button_box" >
-   <property name="geometry" >
+  <widget class="QDialogButtonBox" name="button_box">
+   <property name="geometry">
     <rect>
-     <x>30</x>
-     <y>240</y>
+     <x>20</x>
+     <y>350</y>
      <width>341</width>
      <height>32</height>
     </rect>
    </property>
-   <property name="orientation" >
+   <property name="orientation">
     <enum>Qt::Horizontal</enum>
    </property>
-   <property name="standardButtons" >
+   <property name="standardButtons">
     <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
    </property>
   </widget>
-
   <widget class="QPushButton" name="searchButton">
    <property name="geometry">
     <rect>
-     <x>270</x>
+     <x>260</x>
      <y>30</y>
      <width>112</width>
      <height>32</height>
@@ -42,41 +42,16 @@
     <string>Search</string>
    </property>
   </widget>
-
   <widget class="QListWidget" name="searchResult">
    <property name="geometry">
     <rect>
      <x>30</x>
      <y>80</y>
      <width>180</width>
-     <height>151</height>
+     <height>261</height>
     </rect>
    </property>
   </widget>
-
-
-  <widget class="QListWidget" name="searchResult2">
-   <property name="geometry">
-    <rect>
-     <x>220</x>
-     <y>80</y>
-     <width>180</width>
-     <height>151</height>
-    </rect>
-   </property>
-  </widget>
-
-  <widget class="QListWidget" name="searchResult3">
-   <property name="geometry">
-    <rect>
-     <x>410</x>
-     <y>80</y>
-     <width>180</width>
-     <height>151</height>
-    </rect>
-   </property>
-  </widget>
-
   <widget class="QLineEdit" name="searchBox">
    <property name="geometry">
     <rect>
@@ -87,7 +62,44 @@
     </rect>
    </property>
   </widget>
-
+  <widget class="QWidget" name="verticalLayoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>249</x>
+     <y>80</y>
+     <width>361</width>
+     <height>261</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QLabel" name="abstractLabel">
+      <property name="text">
+       <string></string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QTextBrowser" name="abstractBox"/>
+    </item>
+    <item>
+     <spacer name="horizontalSpacer">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>40</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item>
+     <widget class="QListWidget" name="searchResult2"/>
+    </item>
+   </layout>
+  </widget>
  </widget>
  <resources/>
  <connections>
@@ -97,13 +109,13 @@
    <receiver>ptapluginDialogBase</receiver>
    <slot>accept()</slot>
    <hints>
-    <hint type="source_label" >
-     <x>248</x>
-     <y>254</y>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
     </hint>
-    <hint type="destination_label" >
-     <x>157</x>
-     <y>274</y>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
     </hint>
    </hints>
   </connection>
@@ -113,13 +125,13 @@
    <receiver>ptapluginDialogBase</receiver>
    <slot>reject()</slot>
    <hints>
-    <hint type="source_label" >
-     <x>316</x>
-     <y>260</y>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
     </hint>
-    <hint type="destination_label" >
-     <x>286</x>
-     <y>274</y>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
     </hint>
    </hints>
   </connection>
