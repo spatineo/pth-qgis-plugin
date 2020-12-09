@@ -35,6 +35,7 @@ import os.path
 import requests
 import urllib
 from xml.etree import ElementTree
+from .requestHandler import SearchPTA, getCapabilities, getWFSFeature, getWMSFeature
 
 
 class ptaplugin:
@@ -182,28 +183,6 @@ class ptaplugin:
         f.write(message + "\n\n")
         f.close()
 
-    def getCapabilities(self):
-        response = requests.get("https://kartta.hel.fi/ws/geoserver/avoindata/wfs?request=GetCapabilities", stream=True)
-        xmlString = response.content
-        root = ElementTree.fromstring(xmlString)
-
-        items = []
-
-        url = "https://kartta.hel.fi/ws/geoserver/avoindata/wfs"
-        featureName = "avoindata:Kaavahakemisto_alue_kaava_vireilla"
-
-        self.getWfsFeature(url, featureName)
-
-        for feature in root[3]:
-            title = feature.find("{http://www.opengis.net/wfs/2.0}Title").text
-            item = QListWidgetItem()
-            item.setText(title)
-            item.setData(1, feature)
-            items.append(item)
-            #self.wLog(str(feature))
-
-        return items
-
     def getWfsFeature(self, featureUrl, featureName):
         params = {
             "service": "WFS",
@@ -222,44 +201,45 @@ class ptaplugin:
     def searchApi(self):
         """Send request to pta search API and return results."""
         text = self.dlg.searchBox.text()
+        #self.testWMS()
         if(text and text.strip()):
-            #response = requests.get("http://localhost:8080")
-            url = "https://beta.paikkatietoalusta.fi/api/public/v1/search?X-CLIENT-LANG=FI"
-            #self.wLog(str(self.createPTAJSON(text, "FI")))
-            response = requests.post(url, json = self.createPTAJSON(text, "FI"))
-            responseStatus = response.status_code
-
-            if(responseStatus == 200 or responseStatus == 201 or responseStatus == 204 ):
-                json = response.json()
-                self.addResults(json.get("hits"))
+            #TODO: Do something with language
+            hits = SearchPTA(text, "FI")
+            if hits:
+                self.addResults(hits)
                 self.dlg.searchResult.itemClicked.connect(self.searchResultClicked)
+
+    def testWMS(self):
+        rlayer = getWMSFeature("", "")
+        if rlayer:
+            QgsProject.instance().addMapLayer(vlayer)
 
 
     def addResults(self, hits):
         for hit in hits:
-            for text in hit.get("text"):
-                title = text.get("title")
+            for link in hit.get("downloadLinks"):
+                title = link.get("title")
                 if title is not None:
                     item = QListWidgetItem()
                     item.setText(title)
-                    item.setData(1, text)
+                    item.setData(1, hit)
                     self.dlg.searchResult.addItem(item)
 
     def searchResultClicked(self, item):
-        #TODO
         self.dlg.abstractBox.clear()
         self.dlg.searchResult2.clear()
         self.dlg.abstractLabel.clear()
-        self.wLog(str(item.data(1).get("abstractText")))
-        self.dlg.abstractLabel.setText(item.text())
-        self.dlg.abstractBox.setText(item.data(1).get("abstractText"))
 
-        features = self.getCapabilities()
+        for text in item.data(1).get("text"):
+            #TODO: Do something better with language
+            lang = text.get("lang")
+            if lang == "FI":
+                self.dlg.abstractBox.setText(text.get("title"))
+                self.dlg.abstractBox.setText(text.get("abstractText"))
+
+        features = getCapabilities(item.data(1))
         for feature in features:
             self.dlg.searchResult2.addItem(feature)
-
-    def createPTAJSON(self, queryString, language):
-        return {"skip": 0, "pageSize": 10, "query": queryString.split(), "queryLanguage": language, "facets": {"types": ["isService"], "keywordsInspire": ["Ortoilmakuvat"]}, "sort": [{"field": "title", "order": "asc"}]}
 
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
