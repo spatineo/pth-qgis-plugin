@@ -35,7 +35,7 @@ import os.path
 import requests
 import urllib
 from xml.etree import ElementTree
-from .requestHandler import SearchPTA, getCapabilities, getWFSFeature, getWMSFeature
+from .requestHandler import SearchPTA, getCapabilities, getWFSFeature, getWMSFeature, LOG
 
 
 class ptaplugin:
@@ -176,32 +176,19 @@ class ptaplugin:
         # will be set False in run()
         self.first_start = True
 
-
-    def wLog(self, message):
-        #TODO: Remove
-        f = open("/Users/patrickalaspaa/pylog", "a")
-        f.write(message + "\n\n")
-        f.close()
-
-    def getWfsFeature(self, featureUrl, featureName):
-        params = {
-            "service": "WFS",
-            #"version": "1.0.0",
-            "request": "GetFeature",
-            "typename": featureName,
-            #"srsname": "EPSG23030"
-        }
-        url = featureUrl + "?" + urllib.parse.unquote(urllib.parse.urlencode(params))
-        vlayer = QgsVectorLayer(url, "my wfs layer", "WFS")
-        QgsProject.instance().addMapLayer(vlayer)
-
-        ## https://geoserver.ymparisto.fi/geoserver/wfs?service=wfs&request=GetFeatures&typename=net:Network
-
+    def addWfsFeature(self, featureUrl, featureName):
+        vlayer = getWFSFeature("", "")
+        if vlayer.isValid:
+            QgsProject.instance().addMapLayer(vlayer)
 
     def searchApi(self):
         """Send request to pta search API and return results."""
+        self.dlg.searchResult.clear()
         text = self.dlg.searchBox.text()
-        #self.testWMS()
+        #TODO: REMOVE START
+        #self.addWMS("", "")
+        #self.addWfsFeature("", "")
+        #TODO: REMOVE END
         if(text and text.strip()):
             #TODO: Do something with language
             hits = SearchPTA(text, "FI")
@@ -209,8 +196,8 @@ class ptaplugin:
                 self.addResults(hits)
                 self.dlg.searchResult.itemClicked.connect(self.searchResultClicked)
 
-    def testWMS(self):
-        rlayer = getWMSFeature("", "")
+    def addWMS(self, url, featureName):
+        rlayer = getWMSFeature(url, featureName)
         if rlayer:
             QgsProject.instance().addMapLayer(vlayer)
 
@@ -219,11 +206,22 @@ class ptaplugin:
         for hit in hits:
             for link in hit.get("downloadLinks"):
                 title = link.get("title")
-                if title is not None:
+                if not title and link.get("url"):
+                    title = self.getTitleFromHit(hit)
+
+                if title:
                     item = QListWidgetItem()
                     item.setText(title)
                     item.setData(1, hit)
                     self.dlg.searchResult.addItem(item)
+
+    def getTitleFromHit(self, hit):
+        title = ""
+        for text in hit.get("text"):
+            if text.get("lang") == "FI":
+                title = text.get("title")
+        return title
+
 
     def searchResultClicked(self, item):
         self.dlg.abstractBox.clear()
@@ -245,7 +243,7 @@ class ptaplugin:
         """Removes the plugin menu item and icon from QGIS GUI."""
         for action in self.actions:
             self.iface.removePluginMenu(
-                self.tr(u'&ptaplugin'),
+                self.tr(u'&intelligent-search-plugin'),
                 action)
             self.iface.removeToolBarIcon(action)
 
