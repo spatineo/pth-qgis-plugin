@@ -35,7 +35,11 @@ import os.path
 import requests
 import urllib
 from xml.etree import ElementTree
-from .requestHandler import SearchPTA, getCapabilities, getWFSFeature, getWMSFeature, LOG
+from owslib.wms import WebMapService
+from owslib.wfs import WebFeatureService
+from owslib.wmts import WebMapTileService
+from .requestHandler import SearchPTA, getCapabilities, getWFSFeature, getWMSFeature, listServiceContent, LOG
+from .LayerMeta import LayerMeta
 
 
 class ptaplugin:
@@ -176,19 +180,23 @@ class ptaplugin:
         # will be set False in run()
         self.first_start = True
 
-    def addWfsFeature(self, featureUrl, featureName):
-        vlayer = getWFSFeature("", "")
+    def addWfsFeature(self, layerMeta):
+        #crs = self.iface.activeLayer().crs().authid()
+        crs = "EPSG:3067"
+        LOG(layerMeta.serviceIndex)
+        vlayer = getWFSFeature(layerMeta, self.services[layerMeta.serviceIndex], crs)
         if vlayer.isValid:
             QgsProject.instance().addMapLayer(vlayer)
+
+    def addWMS(self, url, featureName):
+        rlayer = getWMSFeature(url, featureName)
+        if rlayer:
+            QgsProject.instance().addMapLayer(rlayer)
 
     def searchApi(self):
         """Send request to pta search API and return results."""
         self.dlg.searchResult.clear()
         text = self.dlg.searchBox.text()
-        #TODO: REMOVE START
-        #self.addWMS("", "")
-        #self.addWfsFeature("", "")
-        #TODO: REMOVE END
         if(text and text.strip()):
             #TODO: Do something with language
             hits = SearchPTA(text, "FI")
@@ -196,19 +204,13 @@ class ptaplugin:
                 self.addResults(hits)
                 self.dlg.searchResult.itemClicked.connect(self.searchResultClicked)
 
-    def addWMS(self, url, featureName):
-        rlayer = getWMSFeature(url, featureName)
-        if rlayer:
-            QgsProject.instance().addMapLayer(vlayer)
+
 
 
     def addResults(self, hits):
         for hit in hits:
             for link in hit.get("downloadLinks"):
-                title = link.get("title")
-                if not title and link.get("url"):
-                    title = self.getTitleFromHit(hit)
-
+                title = self.getTitleFromHit(hit)
                 if title:
                     item = QListWidgetItem()
                     item.setText(title)
@@ -227,17 +229,54 @@ class ptaplugin:
         self.dlg.abstractBox.clear()
         self.dlg.searchResult2.clear()
         self.dlg.abstractLabel.clear()
+        self.services = []
+        self.urls = []
 
-        for text in item.data(1).get("text"):
+        data = item.data(1)
+        for text in data.get("text"):
             #TODO: Do something better with language
             lang = text.get("lang")
             if lang == "FI":
                 self.dlg.abstractBox.setText(text.get("title"))
                 self.dlg.abstractBox.setText(text.get("abstractText"))
 
-        features = getCapabilities(item.data(1))
-        for feature in features:
-            self.dlg.searchResult2.addItem(feature)
+        links = data.get("downloadLinks")
+        if links:
+            for link in links:
+                url = link.get("url")
+                if "?" in url:
+                    url = url.split("?")[0]
+                self.urls.append(url)
+                self.services.append(self.getCapabilities(url))
+
+        #self.service = getCapabilities(item.data(1))
+        #Add handling for wms and wmts. Try to make code more reusable
+        itemList = []
+        for index, service in enumerate(self.services):
+            items = listServiceContent(index, service, self.urls[index])
+            itemList = itemList + items
+
+        for item in itemList:
+            self.dlg.searchResult2.addItem(item)
+        self.dlg.searchResult2.itemClicked.connect(self.layerClicked)
+
+    def getCapabilities(self, url):
+        if url.endswith("wms"):
+            return WebMapService(url)
+        elif url.endswith("wfs"):
+            return WebFeatureService(url, version='1.1.0')
+        elif url.endswith("wmts"):
+            return WebMapTileService(url)
+
+    def layerClicked(self, item):
+        LOG("Layer was clicked")
+        LOG(str(item))
+        layerMeta = item.data(1)
+        serviceType = self.services[layerMeta.serviceIndex].identification.type
+        if "wfs" in serviceType.lower():
+            self.addWfsFeature(layerMeta)
+
+        #pass
 
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
