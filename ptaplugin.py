@@ -180,21 +180,31 @@ class ptaplugin:
         # will be set False in run()
         self.first_start = True
 
-    def addWfsFeature(self, layerMeta):
-        #crs = self.iface.activeLayer().crs().authid()
-        crs = "EPSG:3067"
+    def addWFS(self, layerMeta):
+        crs = getCRS()
         LOG(layerMeta.serviceIndex)
         vlayer = getWFSFeature(layerMeta, self.services[layerMeta.serviceIndex], crs)
         if vlayer.isValid:
             QgsProject.instance().addMapLayer(vlayer)
 
-    def addWMS(self, url, featureName):
-        rlayer = getWMSFeature(url, featureName)
-        if rlayer:
+    def addWMS(self, layerMeta):
+        crs = getCRS()
+        rlayer = getWMSFeature(layerMeta, self.services[layerMeta.serviceIndex], crs)
+        if rlayer.isValid:
             QgsProject.instance().addMapLayer(rlayer)
+
+    def getCRS():
+        crs = "EPSG:3067"
+        activeLayer =  self.iface.activeLayer()
+        if activeLayer:
+            if activeLayer.crs().authid():
+                crs = self.iface.activeLayer().crs().authid()
+        return crs
+
 
     def searchApi(self):
         """Send request to pta search API and return results."""
+        #getWMSFeature("", "", "")
         self.dlg.searchResult.clear()
         text = self.dlg.searchBox.text()
         if(text and text.strip()):
@@ -274,7 +284,9 @@ class ptaplugin:
         layerMeta = item.data(1)
         serviceType = self.services[layerMeta.serviceIndex].identification.type
         if "wfs" in serviceType.lower():
-            self.addWfsFeature(layerMeta)
+            self.addWFS(layerMeta)
+        elif "wms" in serviceType.lower():
+            self.addWMS(layerMeta)
 
         #pass
 

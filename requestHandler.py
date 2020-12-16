@@ -64,32 +64,32 @@ def listServiceContent(index, service, url):
 
 
 def getWFSFeature(layerMeta, service, crs):
-    if not crs:
-        crs = "EPSG:3067"
-    #params = {
-    #    "service": "WFS",
-    #    #"version": "1.0.0",
-    #    "request": "GetFeature",
-    #    "typename": featureName,
-    #    #"srsname": "EPSG23030"
-    #}
-
-    #url = featureUrl + "?" + urllib.parse.unquote(urllib.parse.urlencode(params))
-    #Check crs options
-    #Testing source format
-    #url = "restrictToRequestBBOX='1' srsname='EPSG:3067' typename='avoindata:Kaavahakemisto_alue_kaava_vireilla' url='https://kartta.hel.fi/ws/geoserver/avoindata/wfs' table=''"
+    crs = checkCRSOptions(service[layerMeta.layerName].crsOptions, crs)
     url = "restrictToRequestBBOX='1' srsname='" + crs + "' typename='" + layerMeta.layerName + "' url='" + layerMeta.serviceUrl + "' table=''"
-
     vlayer = QgsVectorLayer(url, service[layerMeta.layerName].title, "wfs")
     return vlayer
 
-def getWMSFeature(layerUrl, layerName):
+def getWMSFeature(layerMeta, service, crs):
+    crs = checkCRSOptions(service[layerMeta.layerName].crsOptions, crs)
+    formatOptions = service.getOperationByName('GetMap').formatOptions
+    LOG(formatOptions)
 
-    #Get crs
-    #Get layer name
-    source = "crs=CRS:84&dpiMode=7&format=image/png&layers=AM.GroundWaterBody&styles&url=http://paikkatieto.ymparisto.fi/arcgis/services/INSPIRE/SYKE_AlueidenHallintaJaRajoitukset1/MapServer/WMSServer"
-    rlayer = QgsRasterLayer(source, "my wms test layer", "wms")
+    source = {
+        "crs": crs,
+        "dpiMode": "7",
+        "format": "image/png",
+        "layers": layerMeta.layerName,
+        "url": layerMeta.serviceUrl,
+        "styles": ""
+    }
+    source = urllib.parse.unquote(urllib.parse.urlencode(source))
+    #source = "crs=CRS:84&dpiMode=7&format=image/png&layers=AM.GroundWaterBody&styles&url=http://paikkatieto.ymparisto.fi/arcgis/services/INSPIRE/SYKE_AlueidenHallintaJaRajoitukset1/MapServer/WMSServer"
+    rlayer = QgsRasterLayer(source, service[layerMeta.layerName].title, "wms")
+    return rlayer
 
-    LOG("Raster layer is valid: " + str(rlayer.isValid()))
-    if rlayer.isValid():
-        return rlayer
+def checkCRSOptions(layer, crs):
+    crsOptions = layer.crsOptions
+    if crs in crsOptions:
+        return crs
+    else:
+        return "EPSG:3067"
