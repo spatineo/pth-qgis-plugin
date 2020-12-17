@@ -23,7 +23,7 @@
 """
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
 from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtWidgets import QAction, QListWidgetItem
+from qgis.PyQt.QtWidgets import QAction, QListWidgetItem, QTreeWidget, QTreeWidgetItem
 from qgis.server import *
 from qgis.core import QgsVectorLayer, QgsProject
 
@@ -38,8 +38,8 @@ from xml.etree import ElementTree
 from owslib.wms import WebMapService
 from owslib.wfs import WebFeatureService
 from owslib.wmts import WebMapTileService
-from .requestHandler import SearchPTA, getCapabilities, getWFSFeature, getWMSFeature, listServiceContent, LOG
-from .LayerMeta import LayerMeta
+from .requestHandler import SearchPTA, getWFSFeature, getWMSFeature, listChildNodes, LOG
+from .ServiceResolver import getLayersForDownloadLink
 
 
 class ptaplugin:
@@ -180,20 +180,20 @@ class ptaplugin:
         # will be set False in run()
         self.first_start = True
 
-    def addWFS(self, layerMeta):
-        crs = getCRS()
-        LOG(layerMeta.serviceIndex)
-        vlayer = getWFSFeature(layerMeta, self.services[layerMeta.serviceIndex], crs)
+    def addWFS(self, data):
+        crs = self.getCRS()
+        #LOG(layerMeta.serviceIndex)
+        vlayer = getWFSFeature(data, crs)
         if vlayer.isValid:
             QgsProject.instance().addMapLayer(vlayer)
 
-    def addWMS(self, layerMeta):
-        crs = getCRS()
-        rlayer = getWMSFeature(layerMeta, self.services[layerMeta.serviceIndex], crs)
+    def addWMS(self, data):
+        crs = self.getCRS()
+        rlayer = getWMSFeature(data, crs)
         if rlayer.isValid:
             QgsProject.instance().addMapLayer(rlayer)
 
-    def getCRS():
+    def getCRS(self):
         crs = "EPSG:3067"
         activeLayer =  self.iface.activeLayer()
         if activeLayer:
@@ -205,19 +205,26 @@ class ptaplugin:
     def searchApi(self):
         """Send request to pta search API and return results."""
         #getWMSFeature("", "", "")
+        self.dlg.layerTree.clear()
         self.dlg.searchResult.clear()
+        self.dlg.abstractBox.clear()
+        self.dlg.abstractLabel.setText("Palvelun kuvaus")
+        self.services = []
+        self.urls = []
+        self.selected = None
+        self.selected = None
         text = self.dlg.searchBox.text()
+
         if(text and text.strip()):
             #TODO: Do something with language
             hits = SearchPTA(text, "FI")
+            LOG(len(hits))
             if hits:
                 self.addResults(hits)
                 self.dlg.searchResult.itemClicked.connect(self.searchResultClicked)
 
-
-
-
     def addResults(self, hits):
+        #REFACTOR to add if link is missing
         for hit in hits:
             for link in hit.get("downloadLinks"):
                 title = self.getTitleFromHit(hit)
@@ -236,59 +243,50 @@ class ptaplugin:
 
 
     def searchResultClicked(self, item):
+        self.dlg.layerTree.clear()
         self.dlg.abstractBox.clear()
-        self.dlg.searchResult2.clear()
-        self.dlg.abstractLabel.clear()
-        self.services = []
-        self.urls = []
+        self.layersList = []
+        self.selected = None
 
         data = item.data(1)
         for text in data.get("text"):
             #TODO: Do something better with language
             lang = text.get("lang")
             if lang == "FI":
-                self.dlg.abstractBox.setText(text.get("title"))
+                self.dlg.abstractLabel.setText(text.get("title"))
                 self.dlg.abstractBox.setText(text.get("abstractText"))
 
         links = data.get("downloadLinks")
         if links:
             for link in links:
+                LOG("Download links")
+                LOG(link)
+                protocol = link.get("protocol")
                 url = link.get("url")
-                if "?" in url:
-                    url = url.split("?")[0]
-                self.urls.append(url)
-                self.services.append(self.getCapabilities(url))
+                layers = getLayersForDownloadLink(protocol, url)
+                self.layersList.append(layers)
 
-        #self.service = getCapabilities(item.data(1))
         #Add handling for wms and wmts. Try to make code more reusable
-        itemList = []
-        for index, service in enumerate(self.services):
-            items = listServiceContent(index, service, self.urls[index])
-            itemList = itemList + items
+        treeItems = []
 
-        for item in itemList:
-            self.dlg.searchResult2.addItem(item)
-        self.dlg.searchResult2.itemClicked.connect(self.layerClicked)
+        for index, layers in enumerate(self.layersList):
+            treeItem = QTreeWidgetItem()
+            treeItem.setText(0, layers.get("url"))
+            treeItem.addChildren(listChildNodes(layers))
+            treeItems.append(treeItem)
 
-    def getCapabilities(self, url):
-        if url.endswith("wms"):
-            return WebMapService(url)
-        elif url.endswith("wfs"):
-            return WebFeatureService(url, version='1.1.0')
-        elif url.endswith("wmts"):
-            return WebMapTileService(url)
+        self.dlg.layerTree.addTopLevelItems(treeItems)
 
-    def layerClicked(self, item):
-        LOG("Layer was clicked")
-        LOG(str(item))
-        layerMeta = item.data(1)
-        serviceType = self.services[layerMeta.serviceIndex].identification.type
-        if "wfs" in serviceType.lower():
-            self.addWFS(layerMeta)
-        elif "wms" in serviceType.lower():
-            self.addWMS(layerMeta)
+    def treeItemClicked(self, item):
+        self.selected = item.data(0, 1)
 
-        #pass
+    def addLayer(self):
+        if self.selected:
+            data = self.selected
+            if "WFS" == data.get("dict").get("type"):
+                self.addWFS(data)
+            elif "WMS" in data.get("dict").get("type"):
+                self.addWMS(data)
 
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
@@ -308,6 +306,8 @@ class ptaplugin:
             self.first_start = False
             self.dlg = ptapluginDialog()
             self.dlg.searchButton.clicked.connect(self.searchApi)
+            self.dlg.AddLayerButton.clicked.connect(self.addLayer)
+            self.dlg.layerTree.itemClicked.connect(self.treeItemClicked)
 
         # show the dialog
         self.dlg.show()
