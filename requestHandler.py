@@ -49,13 +49,16 @@ def listChildNodes(layers):
 
 
 def getWFSFeature(data, crs):
+    #TODO: CRS optionas should be added
     crs = checkCRSOptions([], crs)
     url = "restrictToRequestBBOX='1' srsname='" + crs + "' typename='" + data.get("layer") + "' url='" + data.get("dict").get("url") + "' table=''"
     vlayer = QgsVectorLayer(url, data.get("layer").title(), "wfs")
     return vlayer
 
 def getWMSFeature(data, crs):
+    #TODO: CRS optionas should be added
     crs = checkCRSOptions([], crs)
+    #TODO: Format optins should be taken into account
     formatOptions = data.get("dict").get("formats")
     LOG(formatOptions)
 

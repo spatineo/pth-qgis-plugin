@@ -270,8 +270,11 @@ class ptaplugin:
         treeItems = []
 
         for index, layers in enumerate(self.layersList):
+            nodeTitle = links[index].get("title")
+            if not nodeTitle:
+                title = layers.get("url")
             treeItem = QTreeWidgetItem()
-            treeItem.setText(0, layers.get("url"))
+            treeItem.setText(0, title)
             treeItem.addChildren(listChildNodes(layers))
             treeItems.append(treeItem)
 
