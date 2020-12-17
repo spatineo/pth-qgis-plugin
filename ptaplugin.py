@@ -40,6 +40,7 @@ from owslib.wfs import WebFeatureService
 from owslib.wmts import WebMapTileService
 from .requestHandler import SearchPTA, getWFSFeature, getWMSFeature, listChildNodes, LOG
 from .ServiceResolver import getLayersForDownloadLink
+import webbrowser
 
 
 class ptaplugin:
@@ -264,6 +265,12 @@ class ptaplugin:
                 protocol = link.get("protocol")
                 url = link.get("url")
                 layers = getLayersForDownloadLink(protocol, url)
+                if layers.get("type") == "NA":
+                    if link.get("url"):
+                        layers["link"] = link.get("url")
+                    else:
+                        layers["link"] = data.get("catalog").get("url")
+
                 self.layersList.append(layers)
 
         #Add handling for wms and wmts. Try to make code more reusable
@@ -272,16 +279,33 @@ class ptaplugin:
         for index, layers in enumerate(self.layersList):
             nodeTitle = links[index].get("title")
             if not nodeTitle:
-                title = layers.get("url")
+                nodeTitle = layers.get("url")
             treeItem = QTreeWidgetItem()
-            treeItem.setText(0, title)
-            treeItem.addChildren(listChildNodes(layers))
+            if(layers.get("type") == "NA"):
+                if not nodeTitle:
+                    nodeTitle = layers.get("link")
+                treeItem.setText(0, nodeTitle)
+                treeItem.setData(0, 1, layers)
+            else:
+                treeItem.setText(0, nodeTitle)
+                treeItem.addChildren(listChildNodes(layers))
+
             treeItems.append(treeItem)
 
         self.dlg.layerTree.addTopLevelItems(treeItems)
 
     def treeItemClicked(self, item):
         self.selected = item.data(0, 1)
+
+    def treeItemDoubleClicked(self, item):
+        data = item.data(0, 1)
+        if data is not None:
+            if data.get("type") == "NA":
+                if data.get("link"):
+                    webbrowser.open(data.get("link"))
+            else:
+                self.selected = item.data(0, 1)
+                self.addLayer()
 
     def addLayer(self):
         if self.selected:
@@ -311,6 +335,7 @@ class ptaplugin:
             self.dlg.searchButton.clicked.connect(self.searchApi)
             self.dlg.AddLayerButton.clicked.connect(self.addLayer)
             self.dlg.layerTree.itemClicked.connect(self.treeItemClicked)
+            self.dlg.layerTree.itemDoubleClicked.connect(self.treeItemDoubleClicked)
 
         # show the dialog
         self.dlg.show()

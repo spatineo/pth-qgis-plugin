@@ -31,19 +31,13 @@ def createPTAJSON(queryString, language):
 
 def listChildNodes(layers):
     items = []
-    if layers.get("type") == "NA":
-        LOG("******************")
-        LOG("******************")
-        LOG("Service could not be resolved")
-        LOG("******************")
-        LOG("******************")
-    else:
-        layerList = layers.get("contents")
-        for layer in layerList:
-            item = QTreeWidgetItem()
-            item.setText(0, layer.title())
-            item.setData(0, 1, {"layer": layer, "dict": layers})
-            items.append(item)
+
+    layerList = layers.get("contents")
+    for layer in layerList:
+        item = QTreeWidgetItem()
+        item.setText(0, layer.title())
+        item.setData(0, 1, {"layer": layer, "dict": layers})
+        items.append(item)
 
     return items
 
