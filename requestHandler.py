@@ -17,7 +17,7 @@ def LOG(message):
         f.write(message + "\n\n")
         f.close()
 
-def SearchPTA(queryString, language):
+def SearchPTH(queryString, language):
     url = "https://beta.paikkatietoalusta.fi/api/public/v1/search?X-CLIENT-LANG=FI"
     response = requests.post(url, json = createPTAJSON(queryString, language))
     responseStatus = response.status_code
