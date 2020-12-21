@@ -181,16 +181,15 @@ class ptaplugin:
         # will be set False in run()
         self.first_start = True
 
-    def addWFS(self, data):
+    def addWFS(self, layerName, data):
         crs = self.getCRS()
-        #LOG(layerMeta.serviceIndex)
-        vlayer = getWFSFeature(data, crs)
+        vlayer = getWFSFeature(layerName, data, crs)
         if vlayer.isValid:
             QgsProject.instance().addMapLayer(vlayer)
 
-    def addWMS(self, data):
+    def addWMS(self, layerName, data):
         crs = self.getCRS()
-        rlayer = getWMSFeature(data, crs)
+        rlayer = getWMSFeature(layerName, data, crs)
         if rlayer.isValid:
             QgsProject.instance().addMapLayer(rlayer)
 
@@ -200,12 +199,13 @@ class ptaplugin:
         if activeLayer:
             if activeLayer.crs().authid():
                 crs = self.iface.activeLayer().crs().authid()
+
         return crs
+
 
 
     def searchApi(self):
         """Send request to pta search API and return results."""
-        #getWMSFeature("", "", "")
         self.dlg.layerTree.clear()
         self.dlg.searchResult.clear()
         self.dlg.abstractBox.clear()
@@ -213,13 +213,11 @@ class ptaplugin:
         self.services = []
         self.urls = []
         self.selected = None
-        self.selected = None
         text = self.dlg.searchBox.text()
 
         if(text and text.strip()):
             #TODO: Do something with language
             hits = SearchPTH(text, "FI")
-            LOG(len(hits))
             if hits:
                 self.addResults(hits)
                 self.dlg.searchResult.itemClicked.connect(self.searchResultClicked)
@@ -270,7 +268,6 @@ class ptaplugin:
                         layers["link"] = link.get("url")
                     else:
                         layers["link"] = data.get("catalog").get("url")
-
                 self.layersList.append(layers)
 
         #Add handling for wms and wmts. Try to make code more reusable
@@ -281,14 +278,15 @@ class ptaplugin:
             if not nodeTitle:
                 nodeTitle = layers.get("url")
             treeItem = QTreeWidgetItem()
-            if(layers.get("type") == "NA"):
+            type = layers.get("type")
+            if(type == "NA"):
                 if not nodeTitle:
                     nodeTitle = layers.get("link")
-                treeItem.setText(0, nodeTitle)
-                treeItem.setData(0, 1, layers)
+                treeItem.setText(0, "LINK: " + nodeTitle)
+                treeItem.setData(0, 1, {"layerName": nodeTitle, "index": index})
             else:
-                treeItem.setText(0, nodeTitle)
-                treeItem.addChildren(listChildNodes(layers))
+                treeItem.setText(0, type + ": " + nodeTitle)
+                treeItem.addChildren(listChildNodes(layers, index))
 
             treeItems.append(treeItem)
 
@@ -300,20 +298,24 @@ class ptaplugin:
     def treeItemDoubleClicked(self, item):
         data = item.data(0, 1)
         if data is not None:
-            if data.get("type") == "NA":
-                if data.get("link"):
-                    webbrowser.open(data.get("link"))
+            layer = self.layersList[data.get("index")]
+            if layer.get("type") == "NA":
+                link = layer.get("link")
+                if link:
+                    webbrowser.open(layer.get("link"))
             else:
-                self.selected = item.data(0, 1)
+                self.selected = data
                 self.addLayer()
 
     def addLayer(self):
         if self.selected:
             data = self.selected
-            if "WFS" == data.get("dict").get("type"):
-                self.addWFS(data)
-            elif "WMS" in data.get("dict").get("type"):
-                self.addWMS(data)
+            layerName = data.get("layerName")
+            layer = self.layersList[data.get("index")]
+            if "WFS" == layer.get("type"):
+                self.addWFS(layerName, layer)
+            elif "WMS" == layer.get("type"):
+                self.addWMS(layerName, layer)
 
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""

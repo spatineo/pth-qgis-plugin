@@ -12,7 +12,8 @@ def doWms(url):
         'type': 'WMS',
         'contents': list(wms.contents),
         'formats': wms.getOperationByName('GetMap').formatOptions,
-        'url': wmsGetMap['url']
+        'url': wmsGetMap['url'],
+        'service': wms
     }
 
 def doWfs(url):
@@ -26,7 +27,8 @@ def doWfs(url):
     return {
         'type': 'WFS',
         'contents': list(wfs.contents),
-        'url': wfsGetFeature['url']
+        'url': wfsGetFeature['url'],
+        'service': wfs
     }
 
 def doWmts(url):
@@ -40,7 +42,8 @@ def doWmts(url):
         'contents': list(wmts.contents),
         'formatPerLayer': dict(map(lambda kv: (kv[0], kv[1].formats), wmts.contents.items())),
         'tileMatrixSetsPerLayer': dict(map(lambda kv: (kv[0], kv[1].tilematrixsets), wmts.contents.items())),
-        'url': wmtsGetCaps['url']
+        'url': wmtsGetCaps['url'],
+        'service': wmts
     }
 
 

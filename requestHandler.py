@@ -29,44 +29,48 @@ def SearchPTH(queryString, language):
 def createPTAJSON(queryString, language):
     return {"skip": 0, "pageSize": 100, "query": queryString.split(), "queryLanguage": language, "facets": {"types": ["isService"]}, "sort": [{"field": "title", "order": "asc"}]}
 
-def listChildNodes(layers):
+def listChildNodes(layers, index):
     items = []
 
     layerList = layers.get("contents")
+
     for layer in layerList:
         item = QTreeWidgetItem()
-        item.setText(0, layer.title())
-        item.setData(0, 1, {"layer": layer, "dict": layers})
+        item.setText(0, layers.get("service")[layer].title)
+        item.setData(0, 1, {"layerName": layer, "index": index})
         items.append(item)
 
     return items
 
 
-def getWFSFeature(data, crs):
+def getWFSFeature(layerName, data, crs):
     #TODO: CRS optionas should be added
-    crs = checkCRSOptions([], crs)
-    url = "restrictToRequestBBOX='1' srsname='" + crs + "' typename='" + data.get("layer") + "' url='" + data.get("dict").get("url") + "' table=''"
-    vlayer = QgsVectorLayer(url, data.get("layer").title(), "wfs")
+    crs = checkCRSOptions(data.get("service")[layerName].crsOptions, crs)
+    url = "restrictToRequestBBOX='1' srsname='" + crs + "' typename='" + layerName + "' url='" + data.get("url") + "' table=''"
+    vlayer = QgsVectorLayer(url, data.get("service")[layerName].title, "wfs")
     return vlayer
 
-def getWMSFeature(data, crs):
+def getWMSFeature(layerName, data, crs):
     #TODO: CRS optionas should be added
-    crs = checkCRSOptions([], crs)
+    crs = checkCRSOptions(data.get("service")[layerName].crsOptions, crs)
     #TODO: Format optins should be taken into account
-    formatOptions = data.get("dict").get("formats")
-    LOG(formatOptions)
+    formatOptions = data.get("formats")
+    format = "image/png"
+    if format not in data.get("formats"):
+        format = formatOptions[0]
 
     source = {
         "crs": crs,
         "dpiMode": "7",
-        "format": "image/png",
-        "layers": data.get("layer"),
-        "url": data.get("dict").get("url"),
+        "format": format,
+        #"layers": data.get("layer"),
+        "layers": layerName,
+        "url": data.get("url"),
         "styles": ""
     }
     source = urllib.parse.unquote(urllib.parse.urlencode(source))
     #source = "crs=CRS:84&dpiMode=7&format=image/png&layers=AM.GroundWaterBody&styles&url=http://paikkatieto.ymparisto.fi/arcgis/services/INSPIRE/SYKE_AlueidenHallintaJaRajoitukset1/MapServer/WMSServer"
-    rlayer = QgsRasterLayer(source, data.get("layer").title(), "wms")
+    rlayer = QgsRasterLayer(source, data.get("service")[layerName].title, "wms")
     return rlayer
 
 def checkCRSOptions(options, crs):
