@@ -81,5 +81,3 @@ def getLayersForDownloadLink(protocol, url):
             }
     return params
 
-params = getLayersForDownloadLink('OGC:WFS', 'https://kartta.hel.fi/ws/geoserver/avoindata/wfs?request=GetCapabilities')
-print(params)

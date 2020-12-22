@@ -277,6 +277,8 @@ class ptaplugin:
             nodeTitle = links[index].get("title")
             if not nodeTitle:
                 nodeTitle = layers.get("url")
+            if not nodeTitle:
+                continue
             treeItem = QTreeWidgetItem()
             type = layers.get("type")
             if(type == "NA"):
@@ -284,7 +286,7 @@ class ptaplugin:
                     nodeTitle = layers.get("link")
                 treeItem.setText(0, "LINK: " + nodeTitle)
                 treeItem.setData(0, 1, {"layerName": nodeTitle, "index": index})
-            else:
+            elif (type != "ERROR"):
                 treeItem.setText(0, type + ": " + nodeTitle)
                 treeItem.addChildren(listChildNodes(layers, index))
 
