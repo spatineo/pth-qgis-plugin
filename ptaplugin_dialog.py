@@ -26,6 +26,8 @@ import os
 
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
+from PyQt5 import QtCore, QtGui
+
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
@@ -43,6 +45,10 @@ class ptapluginDialog(QtWidgets.QDialog, FORM_CLASS):
         # #widgets-and-dialogs-with-auto-connect
         self.setupUi(self)
         self.resizeElements()
+        #self.resizeEvent(self.resizeElements())
+
+    def resizeEvent(self, event: QtGui.QResizeEvent) -> None:
+        self.resizeElements()
 
     def resizeElements(self):
         self.setSearchBoxSize()
@@ -52,6 +58,7 @@ class ptapluginDialog(QtWidgets.QDialog, FORM_CLASS):
         self.setAbstractLabel()
         self.setSearchButton()
         self.setAddLayerButton()
+
 
     def setSearchBoxSize(self):
         #searchBox
