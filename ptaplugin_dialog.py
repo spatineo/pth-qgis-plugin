@@ -42,3 +42,76 @@ class ptapluginDialog(QtWidgets.QDialog, FORM_CLASS):
         # http://qt-project.org/doc/qt-4.8/designer-using-a-ui-file.html
         # #widgets-and-dialogs-with-auto-connect
         self.setupUi(self)
+        self.resizeElements()
+
+    def resizeElements(self):
+        self.setSearchBoxSize()
+        self.setLayerTreeSize()
+        self.setSearchResultSize()
+        self.setAbstractBoxSize()
+        self.setAbstractLabel()
+        self.setSearchButton()
+        self.setAddLayerButton()
+
+    def setSearchBoxSize(self):
+        #searchBox
+        height = float(self.height()) * 0.05
+        width = float(self.width()) * 0.4
+        self.searchBox.resize(width, height)
+        posX = int(float(self.width()) * 0.05)
+        posY = int(float(self.height()) * 0.05)
+        self.searchBox.move(posX, posY)
+
+    def setSearchResultSize(self):
+        #searchResult
+        height = float(self.height()) * 0.35
+        width = float(self.width()) * 0.4
+        self.searchResult.resize(width, height)
+        posX = int(float(self.width()) * 0.05)
+        posY = int(float(self.height()) * 0.15)
+        self.searchResult.move(posX, posY)
+
+    def setLayerTreeSize(self):
+        #layerTree
+        height = float(self.height()) * 0.72
+        width = float(self.width()) * 0.45
+        self.layerTree.resize(width, height)
+        posX = int(float(self.width()) * 0.5)
+        posY = int(float(self.height()) * 0.15)
+        self.layerTree.move(posX, posY)
+
+    def setAbstractBoxSize(self):
+        #abstractBox
+        height = float(self.height()) * 0.4
+        width = float(self.width()) * 0.4
+        self.abstractBox.resize(width, height)
+        posX = int(float(self.width()) * 0.05)
+        posY = int(float(self.height()) * 0.55)
+        self.abstractBox.move(posX, posY)
+
+    def setAbstractLabel(self):
+        #abstractLabel
+        height = float(self.height()) * 0.1
+        width = float(self.width()) * 0.4
+        self.abstractLabel.resize(width, height)
+        posX = int(float(self.width()) * 0.05)
+        posY = int(float(self.height()) * 0.48)
+        self.abstractLabel.move(posX, posY)
+
+    def setSearchButton(self):
+        #searchButton
+        height = float(self.height()) * 0.05
+        width = float(self.width()) * 0.45
+        self.searchButton.resize(width, height)
+        posX = int(float(self.width()) * 0.50)
+        posY = int(float(self.height()) * 0.05)
+        self.searchButton.move(posX, posY)
+
+    def setAddLayerButton(self):
+        #AddLayerButton
+        height = float(self.height()) * 0.05
+        width = float(self.width()) * 0.45
+        self.AddLayerButton.resize(width, height)
+        posX = int(float(self.width()) * 0.50)
+        posY = int(float(self.height()) * 0.90)
+        self.AddLayerButton.move(posX, posY)
