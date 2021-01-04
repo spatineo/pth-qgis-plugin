@@ -24,7 +24,6 @@
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction, QListWidgetItem, QTreeWidget, QTreeWidgetItem
-from qgis.server import *
 from qgis.core import QgsVectorLayer, QgsProject
 
 # Initialize Qt resources from file resources.py
