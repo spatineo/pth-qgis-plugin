@@ -275,7 +275,7 @@ class ptaplugin:
         for index, layers in enumerate(self.layersList):
             nodeTitle = links[index].get("title")
             if not nodeTitle:
-                nodeTitle = layers.get("url")
+                nodeTitle = layers.get("link")
             if not nodeTitle:
                 continue
             treeItem = QTreeWidgetItem()
