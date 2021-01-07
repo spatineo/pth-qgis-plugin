@@ -271,9 +271,10 @@ class ptaplugin:
 
         #Add handling for wms and wmts. Try to make code more reusable
         treeItems = []
-
         for index, layers in enumerate(self.layersList):
             nodeTitle = links[index].get("title")
+            if not nodeTitle:
+                nodeTitle = layers.get("url")
             if not nodeTitle:
                 nodeTitle = layers.get("link")
             if not nodeTitle:
