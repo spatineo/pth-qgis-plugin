@@ -1,7 +1,10 @@
 import requests
 import urllib
+import json
+from PyQt5.QtCore import QUrl, QJsonDocument
+from PyQt5.QtNetwork import QNetworkRequest
 from xml.etree import ElementTree
-from qgis.core import QgsVectorLayer, QgsRasterLayer
+from qgis.core import QgsVectorLayer, QgsRasterLayer, QgsBlockingNetworkRequest, QgsNetworkReplyContent
 from qgis.PyQt.QtWidgets import QListWidgetItem, QTreeWidgetItem
 from owslib.wms import WebMapService
 from owslib.wfs import WebFeatureService
@@ -18,13 +21,27 @@ def LOG(message):
         f.close()
 
 def SearchPTH(queryString, language):
-    url = "https://beta.paikkatietoalusta.fi/api/public/v1/search?X-CLIENT-LANG=FI"
-    response = requests.post(url, json = createPTAJSON(queryString, language))
-    responseStatus = response.status_code
-    LOG(response.status_code)
-    if(responseStatus == 200 or responseStatus == 201 or responseStatus == 204 ):
-        json = response.json()
-        return json.get("hits")
+    request = QNetworkRequest()
+    request.setUrl(QUrl("https://beta.paikkatietoalusta.fi/api/public/v1/search?X-CLIENT-LANG=FI"))
+    request.setHeader(request.ContentTypeHeader, "application/json")
+    jsonByteArray = QJsonDocument(createPTAJSON(queryString, language)).toJson()
+
+    blockingNetworkRequest = QgsBlockingNetworkRequest()
+    err = blockingNetworkRequest.post(request, jsonByteArray, True)
+
+    if not err:
+        response = blockingNetworkRequest.reply().content()
+        dict_str = response.data().decode("utf-8")
+        if dict_str:
+            resp_json = json.loads(dict_str)
+            return resp_json.get("hits")
+        else:
+            #No result returned
+            LOG("Nothing returned")
+            pass
+    else:
+        LOG(blockingNetworkRequest.errorMessage())
+        #Show error
 
 def createPTAJSON(queryString, language):
     return {"skip": 0, "pageSize": 100, "query": queryString.split(), "queryLanguage": language, "facets": {"types": ["isService"]}, "sort": [{"field": "title", "order": "asc"}]}
