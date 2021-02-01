@@ -220,6 +220,8 @@ class ptaplugin:
             if hits:
                 self.addResults(hits)
                 self.dlg.searchResult.itemClicked.connect(self.searchResultClicked)
+            else:
+                self.noResults()
 
     def addResults(self, hits):
         #REFACTOR to add if link is missing
@@ -231,6 +233,11 @@ class ptaplugin:
                     item.setText(title)
                     item.setData(1, hit)
                     self.dlg.searchResult.addItem(item)
+
+    def noResults(self):
+        item = QListWidgetItem()
+        item.setText("Hakutuloksia ei löytynyt!")
+        self.dlg.searchResult.addItem(item)
 
     def getTitleFromHit(self, hit):
         title = ""
@@ -247,6 +254,8 @@ class ptaplugin:
         self.selected = None
 
         data = item.data(1)
+        if not data:
+            return
         for text in data.get("text"):
             #TODO: Do something better with language
             lang = text.get("lang")
