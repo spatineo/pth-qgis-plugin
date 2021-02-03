@@ -45,10 +45,11 @@ def downloadDocument(url):
     blockingNetworkRequest = QgsBlockingNetworkRequest()
     err = blockingNetworkRequest.get(request)
     if err:
+        print(err)
         raise Exception
 
     response = blockingNetworkRequest.reply().content()
-    dict_str = response.data().decode("utf-8")
+    dict_str = response.data()
 
     return dict_str
 
@@ -61,8 +62,8 @@ def getWmsService(baseurl):
             service = WebMapService(variant['url'], xml=doc, version=variant['version'])
             if service is not None:
                 return service
-        except:
-            print("Unable to process {}".format(variant))
+        except Exception as e:
+            print("Unable to process {}, got error: {}".format(variant, e))
 
 def doWms(url):
     wms = getWmsService(url)
@@ -162,15 +163,3 @@ def getLayersForDownloadLink(protocol, url):
                 'exception': e.args
             }
     return params
-
-wfs = getWfsService("https://julkinen.vayla.fi/inspirepalvelu/avoin/wfs?SERVICE=WFS&REQUEST=GetCapabilities")
-
-print(wfs)
-
-wms = getWmsService("https://julkinen.vayla.fi/inspirepalvelu/avoin/wms?SERVICE=WFS&REQUEST=GetCapabilities")
-
-print(wms)
-
-wmts = getWmtsService("http://0gwc.nunagis.gl/service/wmts?")
-
-print(wmts)
