@@ -44,7 +44,9 @@ def SearchPTH(queryString, language):
         #Show error
 
 def createPTAJSON(queryString, language):
-    return {"skip": 0, "pageSize": 100, "query": queryString.split(), "queryLanguage": language, "facets": {"types": ["isService"]}, "sort": [{"field": "title", "order": "asc"}]}
+    splitString = queryString.split()
+    LOG(splitString)
+    return {"skip": 0, "pageSize": 100, "query": splitString, "queryLanguage": language, "facets": {"types": ["isService"]}, "sort": [{"field": "title", "order": "asc"}]}
 
 def listChildNodes(layers, index):
     items = []

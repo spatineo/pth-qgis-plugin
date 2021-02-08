@@ -58,6 +58,8 @@ class ptapluginDialog(QtWidgets.QDialog, FORM_CLASS):
         self.setAbstractLabel()
         self.setSearchButton()
         self.setAddLayerButton()
+        self.setServiceLabel()
+        self.setSearchResultLabel()
 
 
     def setSearchBoxSize(self):
@@ -122,3 +124,21 @@ class ptapluginDialog(QtWidgets.QDialog, FORM_CLASS):
         posX = int(float(self.width()) * 0.50)
         posY = int(float(self.height()) * 0.90)
         self.AddLayerButton.move(posX, posY)
+
+    def setSearchResultLabel(self):
+        #searchResultLabel
+        height = float(self.height()) * 0.1
+        width = float(self.width()) * 0.4
+        self.searchResultLabel.resize(width, height)
+        posX = int(float(self.width()) * 0.05)
+        posY = int(float(self.height()) * 0.08)
+        self.searchResultLabel.move(posX, posY)
+
+    def setServiceLabel(self):
+        #serviceLabel
+        height = float(self.height()) * 0.1
+        width = float(self.width()) * 0.4
+        self.serviceLabel.resize(width, height)
+        posX = int(float(self.width()) * 0.5)
+        posY = int(float(self.height()) * 0.08)
+        self.serviceLabel.move(posX, posY)

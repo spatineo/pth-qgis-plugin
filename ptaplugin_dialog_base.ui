@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Paikkatietohakemisto</string>
+   <string>paikkatietohakemisto-plugin</string>
   </property>
   <widget class="QPushButton" name="searchButton">
    <property name="geometry">
@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Search</string>
+    <string>Hae palveluita</string>
    </property>
    <property name="default">
     <bool>true</bool>
@@ -65,7 +65,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Add Layer</string>
+    <string>Lisää karttataso</string>
    </property>
    <property name="autoDefault">
     <bool>true</bool>
@@ -103,7 +103,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Palvelun kuvaus</string>
+    <string>Valittu palvelu:</string>
    </property>
   </widget>
   <widget class="QTreeWidget" name="layerTree">
@@ -119,6 +119,36 @@
     <bool>false</bool>
    </attribute>
   </widget>
+
+
+  <widget class="QLabel" name="searchResultLabel">
+   <property name="geometry">
+    <rect>
+     <x>28</x>
+     <y>258</y>
+     <width>221</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Hakutulokset:</string>
+   </property>
+  </widget>
+
+  <widget class="QLabel" name="serviceLabel">
+   <property name="geometry">
+    <rect>
+     <x>28</x>
+     <y>258</y>
+     <width>221</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Hakutuloksen linkit:</string>
+   </property>
+  </widget>
+
  </widget>
  <resources/>
  <connections/>

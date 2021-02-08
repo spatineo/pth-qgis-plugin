@@ -71,7 +71,7 @@ class ptaplugin:
 
         # Declare instance attributes
         self.actions = []
-        self.menu = self.tr(u'&intelligent-search-plugin')
+        self.menu = self.tr(u'&paikkatietohakemisto-plugin')
 
         # Check if plugin was started the first time in current QGIS session
         # Must be set in initGui() to survive plugin reloads
@@ -173,7 +173,7 @@ class ptaplugin:
         icon_path = ':/plugins/qgis-intelligent-search/icon.png'
         self.add_action(
             icon_path,
-            text=self.tr(u'pth search'),
+            text=self.tr(u'Hae karttatasoja'),
             callback=self.run,
             parent=self.iface.mainWindow())
 
@@ -208,7 +208,6 @@ class ptaplugin:
         self.dlg.layerTree.clear()
         self.dlg.searchResult.clear()
         self.dlg.abstractBox.clear()
-        self.dlg.abstractLabel.setText("Palvelun kuvaus")
         self.services = []
         self.urls = []
         self.selected = None
@@ -249,7 +248,6 @@ class ptaplugin:
 
     def searchResultClicked(self, item):
         self.dlg.layerTree.clear()
-        self.dlg.abstractBox.clear()
         self.layersList = []
         self.selected = None
 
@@ -260,7 +258,6 @@ class ptaplugin:
             #TODO: Do something better with language
             lang = text.get("lang")
             if lang == "FI":
-                self.dlg.abstractLabel.setText(text.get("title"))
                 self.dlg.abstractBox.setText(text.get("abstractText"))
 
         links = data.get("downloadLinks")
@@ -332,7 +329,7 @@ class ptaplugin:
         """Removes the plugin menu item and icon from QGIS GUI."""
         for action in self.actions:
             self.iface.removePluginMenu(
-                self.tr(u'&intelligent-search-plugin'),
+                self.tr(u'&paikkatietohakemisto-plugin'),
                 action)
             self.iface.removeToolBarIcon(action)
 
