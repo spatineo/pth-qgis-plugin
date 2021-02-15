@@ -18,7 +18,7 @@ from qgis.PyQt.QtGui import QIcon
 
 
 
-class ptapluginDialogTest(unittest.TestCase):
+class pthpluginDialogTest(unittest.TestCase):
     """Test rerources work."""
 
     def setUp(self):
@@ -31,12 +31,12 @@ class ptapluginDialogTest(unittest.TestCase):
 
     def test_icon_png(self):
         """Test we can click OK."""
-        path = ':/plugins/ptaplugin/icon.png'
+        path = ':/plugins/pthplugin/icon.png'
         icon = QIcon(path)
         self.assertFalse(icon.isNull())
 
 if __name__ == "__main__":
-    suite = unittest.makeSuite(ptapluginResourcesTest)
+    suite = unittest.makeSuite(pthpluginResourcesTest)
     runner = unittest.TextTestRunner(verbosity=2)
     runner.run(suite)
 

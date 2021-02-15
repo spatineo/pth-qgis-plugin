@@ -1,7 +1,7 @@
 #/***************************************************************************
-# ptaplugin
+# pthplugin
 #
-# QGIS plugin utilizing the pta intelligent search api
+# QGIS plugin utilizing the pth intelligent search api
 #							 -------------------
 #		begin				: 2020-11-12
 #		git sha				: $Format:%H$
@@ -38,15 +38,15 @@ LOCALES =
 # translation
 SOURCES = \
 	__init__.py \
-	ptaplugin.py ptaplugin_dialog.py
+	pthplugin.py pthplugin_dialog.py
 
 PLUGINNAME = intelligent-search-plugin
 
 PY_FILES = \
 	__init__.py \
-	ptaplugin.py ptaplugin_dialog.py
+	pthplugin.py pthplugin_dialog.py
 
-UI_FILES = ptaplugin_dialog_base.ui
+UI_FILES = pthplugin_dialog_base.ui
 
 EXTRAS = metadata.txt icon.png
 

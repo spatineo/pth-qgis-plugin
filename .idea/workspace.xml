@@ -1,11 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="31a8d4fd-f7a6-449d-862c-9d2a272b8a90" name="Default Changelist" comment="" />
+    <list default="true" id="31a8d4fd-f7a6-449d-862c-9d2a272b8a90" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.html" beforeDir="false" afterPath="$PROJECT_DIR$/README.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.txt" beforeDir="false" afterPath="$PROJECT_DIR$/README.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/help/source/conf.py" beforeDir="false" afterPath="$PROJECT_DIR$/help/source/conf.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/help/source/index.rst" beforeDir="false" afterPath="$PROJECT_DIR$/help/source/index.rst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/metadata.txt" beforeDir="false" afterPath="$PROJECT_DIR$/metadata.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pb_tool.cfg" beforeDir="false" afterPath="$PROJECT_DIR$/pb_tool.cfg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ptaplugin.py" beforeDir="false" afterPath="$PROJECT_DIR$/pthplugin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ptaplugin_dialog.py" beforeDir="false" afterPath="$PROJECT_DIR$/ptaplugin_dialog.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ptaplugin_dialog_base.ui" beforeDir="false" afterPath="$PROJECT_DIR$/pthplugin_dialog_base.ui" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requestHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/requestHandler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources.py" beforeDir="false" afterPath="$PROJECT_DIR$/resources.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources.qrc" beforeDir="false" afterPath="$PROJECT_DIR$/resources.qrc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/test_ptaplugin_dialog.py" beforeDir="false" afterPath="$PROJECT_DIR$/test/test_ptaplugin_dialog.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/test_resources.py" beforeDir="false" afterPath="$PROJECT_DIR$/test/test_resources.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectId" id="1kBWBJOo6N93Lb3bGvNFtw6ItVH" />
   <component name="ProjectViewState">
@@ -50,5 +71,15 @@
       <screen x="0" y="0" width="1920" height="1080" />
     </state>
     <state x="653" y="372" key="com.intellij.ide.util.TipDialog/0.0.1920.1080/1920.0.1920.1080@0.0.1920.1080" timestamp="1605174615262" />
+    <state x="682" y="481" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1613368506464">
+      <screen x="0" y="0" width="1792" height="1120" />
+    </state>
+    <state x="682" y="481" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1792.1120@0.0.1792.1120" timestamp="1613368506464" />
+    <state x="599" y="300" width="816" height="550" key="find.popup" timestamp="1613371873794">
+      <screen x="0" y="25" width="1920" height="970" />
+    </state>
+    <state x="559" y="317" width="674" height="486" key="find.popup/0.0.1792.1120@0.0.1792.1120" timestamp="1613368838130" />
+    <state x="559" y="311" width="674" height="486" key="find.popup/0.25.1792.1010@0.25.1792.1010" timestamp="1613368859147" />
+    <state x="599" y="300" width="816" height="550" key="find.popup/0.25.1920.970/-1792.25.1792.1095@0.25.1920.970" timestamp="1613371873794" />
   </component>
 </project>

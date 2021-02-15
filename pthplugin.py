@@ -29,7 +29,7 @@ from qgis.core import QgsVectorLayer, QgsProject
 # Initialize Qt resources from file resources.py
 from .resources import *
 # Import the code for the dialog
-from .ptaplugin_dialog import ptapluginDialog
+from .pthplugin_dialog import pthpluginDialog
 import os.path
 import requests
 import urllib
@@ -42,7 +42,7 @@ from .ServiceResolver import getLayersForDownloadLink
 import webbrowser
 
 
-class ptaplugin:
+class pthplugin:
     """QGIS Plugin Implementation."""
 
     def __init__(self, iface):
@@ -62,7 +62,7 @@ class ptaplugin:
         locale_path = os.path.join(
             self.plugin_dir,
             'i18n',
-            'ptaplugin_{}.qm'.format(locale))
+            'pthplugin_{}.qm'.format(locale))
 
         if os.path.exists(locale_path):
             self.translator = QTranslator()
@@ -76,6 +76,10 @@ class ptaplugin:
         # Check if plugin was started the first time in current QGIS session
         # Must be set in initGui() to survive plugin reloads
         self.first_start = None
+        self.services = []
+        self.urls = []
+        self.selected = None
+        self.layersList = []
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -170,7 +174,7 @@ class ptaplugin:
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
 
-        icon_path = ':/plugins/qgis-intelligent-search/icon.png'
+        icon_path = ':/plugins/pth-qgis-plugin/icon.png'
         self.add_action(
             icon_path,
             text=self.tr(u'Hae karttatasoja'),
@@ -204,7 +208,7 @@ class ptaplugin:
 
 
     def searchApi(self):
-        """Send request to pta search API and return results."""
+        """Send request to pth search API and return results."""
         self.dlg.layerTree.clear()
         self.dlg.searchResult.clear()
         self.dlg.abstractBox.clear()
@@ -287,12 +291,12 @@ class ptaplugin:
                 continue
             treeItem = QTreeWidgetItem()
             type = layers.get("type")
-            if(type == "NA"):
+            if type == "NA":
                 if not nodeTitle:
                     nodeTitle = layers.get("link")
                 treeItem.setText(0, "LINK: " + nodeTitle)
                 treeItem.setData(0, 1, {"layerName": nodeTitle, "index": index})
-            elif (type != "ERROR"):
+            elif type != "ERROR":
                 treeItem.setText(0, type + ": " + nodeTitle)
                 treeItem.addChildren(listChildNodes(layers, index))
 
@@ -341,7 +345,7 @@ class ptaplugin:
         # Only create GUI ONCE in callback, so that it will only load when the plugin is started
         if self.first_start == True:
             self.first_start = False
-            self.dlg = ptapluginDialog()
+            self.dlg = pthpluginDialog()
             self.dlg.searchButton.clicked.connect(self.searchApi)
             self.dlg.AddLayerButton.clicked.connect(self.addLayer)
             self.dlg.layerTree.itemClicked.connect(self.treeItemClicked)

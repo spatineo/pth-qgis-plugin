@@ -24,7 +24,7 @@ def SearchPTH(queryString, language):
     request = QNetworkRequest()
     request.setUrl(QUrl("https://beta.paikkatietoalusta.fi/api/public/v1/search?X-CLIENT-LANG=FI"))
     request.setHeader(request.ContentTypeHeader, "application/json")
-    jsonByteArray = QJsonDocument(createPTAJSON(queryString, language)).toJson()
+    jsonByteArray = QJsonDocument(createJson(queryString, language)).toJson()
 
     blockingNetworkRequest = QgsBlockingNetworkRequest()
     err = blockingNetworkRequest.post(request, jsonByteArray, True)
@@ -43,7 +43,7 @@ def SearchPTH(queryString, language):
         LOG(blockingNetworkRequest.errorMessage())
         #Show error
 
-def createPTAJSON(queryString, language):
+def createJson(queryString, language):
     return {"skip": 0, "pageSize": 100, "query": queryString.split(), "queryLanguage": language, "facets": {"types": ["isService"]}, "sort": []}
 
 def listChildNodes(layers, index):

@@ -16,18 +16,18 @@ import unittest
 
 from qgis.PyQt.QtGui import QDialogButtonBox, QDialog
 
-from ptaplugin_dialog import ptapluginDialog
+from pthplugin_dialog import pthpluginDialog
 
 from utilities import get_qgis_app
 QGIS_APP = get_qgis_app()
 
 
-class ptapluginDialogTest(unittest.TestCase):
+class pthpluginDialogTest(unittest.TestCase):
     """Test dialog works."""
 
     def setUp(self):
         """Runs before each test."""
-        self.dialog = ptapluginDialog(None)
+        self.dialog = pthpluginDialog(None)
 
     def tearDown(self):
         """Runs after each test."""
@@ -49,7 +49,7 @@ class ptapluginDialogTest(unittest.TestCase):
         self.assertEqual(result, QDialog.Rejected)
 
 if __name__ == "__main__":
-    suite = unittest.makeSuite(ptapluginDialogTest)
+    suite = unittest.makeSuite(pthpluginDialogTest)
     runner = unittest.TextTestRunner(verbosity=2)
     runner.run(suite)
 

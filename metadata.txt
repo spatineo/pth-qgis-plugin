@@ -5,12 +5,12 @@
 [general]
 name=intelligent-search-plugin
 qgisMinimumVersion=3.0
-description=QGIS plugin utilizing the pta intelligent search api
+description=QGIS plugin utilizing the pth intelligent search api
 version=0.1
 author=Spatineo
 email=patrick.alaspaa@spatineo.com
 
-about=A proof of concept QGIS plugin intended to demonstrate one of the multitude of ways to utilize the pta intelligent search api.
+about=A proof of concept QGIS plugin intended to demonstrate one of the multitude of ways to utilize the pth intelligent search api.
 
 tracker=http://bugs
 repository=http://repo

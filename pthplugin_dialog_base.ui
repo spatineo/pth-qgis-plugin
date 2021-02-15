@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ptapluginDialogBase</class>
- <widget class="QDialog" name="ptapluginDialogBase">
+ <class>pthpluginDialogBase</class>
+ <widget class="QDialog" name="pthpluginDialogBase">
   <property name="geometry">
    <rect>
     <x>0</x>
