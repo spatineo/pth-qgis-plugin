@@ -22,7 +22,7 @@ def LOG(message):
 
 def SearchPTH(queryString, language):
     request = QNetworkRequest()
-    request.setUrl(QUrl("https://beta.paikkatietoalusta.fi/api/public/v1/search?X-CLIENT-LANG=FI"))
+    request.setUrl(QUrl("https://paikkatietojentuottajat-koekaytto.maanmittauslaitos.fi/api/public/v1/search?X-CLIENT-LANG=FI"))
     request.setHeader(request.ContentTypeHeader, "application/json")
     jsonByteArray = QJsonDocument(createJson(queryString, language)).toJson()
 
