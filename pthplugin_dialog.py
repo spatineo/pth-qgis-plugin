@@ -61,7 +61,6 @@ class pthpluginDialog(QtWidgets.QDialog, FORM_CLASS):
         self.setServiceLabel()
         self.setSearchResultLabel()
 
-
     def setSearchBoxSize(self):
         #searchBox
         height = float(self.height()) * 0.05
@@ -77,7 +76,7 @@ class pthpluginDialog(QtWidgets.QDialog, FORM_CLASS):
         width = float(self.width()) * 0.4
         self.searchResult.resize(width, height)
         posX = int(float(self.width()) * 0.05)
-        posY = int(float(self.height()) * 0.15)
+        posY = int(float(self.height()) * 0.17)
         self.searchResult.move(posX, posY)
 
     def setLayerTreeSize(self):
@@ -86,7 +85,7 @@ class pthpluginDialog(QtWidgets.QDialog, FORM_CLASS):
         width = float(self.width()) * 0.45
         self.layerTree.resize(width, height)
         posX = int(float(self.width()) * 0.5)
-        posY = int(float(self.height()) * 0.15)
+        posY = int(float(self.height()) * 0.17)
         self.layerTree.move(posX, posY)
 
     def setAbstractBoxSize(self):
@@ -127,18 +126,18 @@ class pthpluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
     def setSearchResultLabel(self):
         #searchResultLabel
-        height = float(self.height()) * 0.1
+        height = float(self.height()) * 0.05
         width = float(self.width()) * 0.4
         self.searchResultLabel.resize(width, height)
         posX = int(float(self.width()) * 0.05)
-        posY = int(float(self.height()) * 0.08)
+        posY = int(float(self.height()) * 0.11)
         self.searchResultLabel.move(posX, posY)
 
     def setServiceLabel(self):
         #serviceLabel
-        height = float(self.height()) * 0.1
+        height = float(self.height()) * 0.05
         width = float(self.width()) * 0.4
         self.serviceLabel.resize(width, height)
         posX = int(float(self.width()) * 0.5)
-        posY = int(float(self.height()) * 0.08)
+        posY = int(float(self.height()) * 0.11)
         self.serviceLabel.move(posX, posY)
